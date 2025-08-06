@@ -42,7 +42,7 @@ describe('Toast Components', () => {
     await user.click(infoButton);
 
     expect(screen.getByText('Test message')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardInfo');
+    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-filledInfo');
   });
 
   it('should display error toast with correct styling', async () => {
@@ -59,7 +59,7 @@ describe('Toast Components', () => {
     await user.click(errorButton);
 
     expect(screen.getByText('Error message')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardError');
+    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-filledError');
   });
 
   it('should display warning toast with correct styling', async () => {
@@ -76,7 +76,7 @@ describe('Toast Components', () => {
     await user.click(warningButton);
 
     expect(screen.getByText('Warning message')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardWarning');
+    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-filledWarning');
   });
 
   it('should display success toast with correct styling', async () => {
@@ -93,7 +93,7 @@ describe('Toast Components', () => {
     await user.click(successButton);
 
     expect(screen.getByText('Success message')).toBeInTheDocument();
-    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardSuccess');
+    expect(screen.getByRole('alert')).toHaveClass('MuiAlert-filledSuccess');
   });
 
   it('should display and close toast correctly', async () => {

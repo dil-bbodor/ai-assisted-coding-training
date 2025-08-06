@@ -134,15 +134,37 @@ describe('sessionStorage utilities', () => {
 
       const stored = window.sessionStorage.getItem('todos');
       expect(stored).toBeTruthy();
-      expect(JSON.parse(stored!)).toEqual(mockTodos);
+
+      // Verify the stored data matches the serialized version
+      const expectedSerialized = [
+        {
+          id: '1',
+          title: 'Test Todo 1',
+          description: 'Test Description 1',
+          completed: false,
+          createdAt: '2023-01-01T00:00:00.000Z',
+        },
+        {
+          id: '2',
+          title: 'Test Todo 2',
+          description: 'Test Description 2',
+          completed: true,
+          createdAt: '2023-01-02T00:00:00.000Z',
+        },
+      ];
+      expect(JSON.parse(stored!)).toEqual(expectedSerialized);
     });
 
     it('should return error message on QuotaExceededError', () => {
-      const originalSetItem = window.sessionStorage.setItem;
+      // Clear storage first
+      window.sessionStorage.clear();
+
+      // Create a mock that directly affects the global sessionStorage
+      const originalSetItem = Storage.prototype.setItem;
       const error = new Error('QuotaExceededError');
       error.name = 'QuotaExceededError';
 
-      window.sessionStorage.setItem = vi.fn().mockImplementation(() => {
+      Storage.prototype.setItem = vi.fn().mockImplementation(() => {
         throw error;
       });
 
@@ -153,16 +175,19 @@ describe('sessionStorage utilities', () => {
       expect(result).toBe('Storage quota exceeded – your latest changes may not be saved.');
       expect(consoleSpy).toHaveBeenCalledWith('Storage quota exceeded, unable to save todos');
 
-      // Restore original method
-      window.sessionStorage.setItem = originalSetItem;
+      // Restore mocks
+      Storage.prototype.setItem = originalSetItem;
       consoleSpy.mockRestore();
     });
 
     it('should return error message on other storage errors', () => {
-      const originalSetItem = window.sessionStorage.setItem;
+      // Clear storage first
+      window.sessionStorage.clear();
+
+      const originalSetItem = Storage.prototype.setItem;
       const error = new Error('Some other error');
 
-      window.sessionStorage.setItem = vi.fn().mockImplementation(() => {
+      Storage.prototype.setItem = vi.fn().mockImplementation(() => {
         throw error;
       });
 
@@ -173,8 +198,8 @@ describe('sessionStorage utilities', () => {
       expect(result).toBe('Failed to save changes to session storage.');
       expect(consoleSpy).toHaveBeenCalledWith('Failed to save todos to sessionStorage:', error);
 
-      // Restore original method
-      window.sessionStorage.setItem = originalSetItem;
+      // Restore mocks
+      Storage.prototype.setItem = originalSetItem;
       consoleSpy.mockRestore();
     });
   });
@@ -189,10 +214,10 @@ describe('sessionStorage utilities', () => {
     });
 
     it('should handle storage errors gracefully', () => {
-      const originalRemoveItem = window.sessionStorage.removeItem;
+      const originalRemoveItem = Storage.prototype.removeItem;
       const error = new Error('Storage error');
 
-      window.sessionStorage.removeItem = vi.fn().mockImplementation(() => {
+      Storage.prototype.removeItem = vi.fn().mockImplementation(() => {
         throw error;
       });
 
@@ -202,8 +227,8 @@ describe('sessionStorage utilities', () => {
       expect(() => clearTodos()).not.toThrow();
       expect(consoleSpy).toHaveBeenCalledWith('Failed to clear todos from sessionStorage:', error);
 
-      // Restore original method
-      window.sessionStorage.removeItem = originalRemoveItem;
+      // Restore mocks
+      Storage.prototype.removeItem = originalRemoveItem;
       consoleSpy.mockRestore();
     });
   });
