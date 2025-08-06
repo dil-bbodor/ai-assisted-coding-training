@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Todo } from '../types/Todo';
 import { v4 as uuidv4 } from 'uuid';
 import { TodoContext } from './TodoContextType';
+import { loadTodos, saveTodos } from '../utils/sessionStorage';
+import { useToast } from '../components/Toast';
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  // Initialize todos from sessionStorage
+  const [todos, setTodos] = useState<Todo[]>(() => loadTodos());
+  const { showToast } = useToast();
+
+  // Persist todos to sessionStorage whenever they change
+  useEffect(() => {
+    const errorMessage = saveTodos(todos);
+    if (errorMessage) {
+      showToast(errorMessage, 'warning');
+    }
+  }, [todos, showToast]);
 
   const addTodo = (title: string, description: string) => {
     const newTodo: Todo = {
