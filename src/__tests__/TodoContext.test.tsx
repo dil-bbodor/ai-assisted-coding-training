@@ -1,7 +1,16 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TodoProvider } from '../contexts/TodoContext';
+import { ToastProvider } from '../components/Toast';
 import { useTodo } from '../hooks/useTodo';
+import { vi } from 'vitest';
+
+// Mock sessionStorage utilities to prevent interference with other tests
+vi.mock('../utils/sessionStorage', () => ({
+  loadTodos: vi.fn(() => []),
+  saveTodos: vi.fn(() => null),
+  clearTodos: vi.fn(),
+}));
 // import { act } from 'react-dom/test-utils';
 
 const TestComponent = () => {
@@ -35,9 +44,11 @@ const TestComponent = () => {
 describe('TodoContext', () => {
   it('provides empty todos array initially', () => {
     render(
-      <TodoProvider>
-        <TestComponent />
-      </TodoProvider>
+      <ToastProvider>
+        <TodoProvider>
+          <TestComponent />
+        </TodoProvider>
+      </ToastProvider>
     );
 
     expect(screen.getByTestId('todo-count').textContent).toBe('0');
@@ -47,9 +58,11 @@ describe('TodoContext', () => {
     const user = userEvent.setup();
 
     render(
-      <TodoProvider>
-        <TestComponent />
-      </TodoProvider>
+      <ToastProvider>
+        <TodoProvider>
+          <TestComponent />
+        </TodoProvider>
+      </ToastProvider>
     );
 
     await user.click(screen.getByTestId('add-todo'));
@@ -63,9 +76,11 @@ describe('TodoContext', () => {
     const user = userEvent.setup();
 
     render(
-      <TodoProvider>
-        <TestComponent />
-      </TodoProvider>
+      <ToastProvider>
+        <TodoProvider>
+          <TestComponent />
+        </TodoProvider>
+      </ToastProvider>
     );
 
     await user.click(screen.getByTestId('add-todo'));
@@ -90,9 +105,11 @@ describe('TodoContext', () => {
     const user = userEvent.setup();
 
     render(
-      <TodoProvider>
-        <TestComponent />
-      </TodoProvider>
+      <ToastProvider>
+        <TodoProvider>
+          <TestComponent />
+        </TodoProvider>
+      </ToastProvider>
     );
 
     await user.click(screen.getByTestId('add-todo'));
